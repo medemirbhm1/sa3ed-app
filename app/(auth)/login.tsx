@@ -38,6 +38,7 @@ export default function Login() {
       await signIn(res.data.data);
       router.replace("/(tabs)/");
     } catch (err) {
+      console.log(err);
       setError("email", { message: "Email ou mot de passe incorrect" });
     }
   };
