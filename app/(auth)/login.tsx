@@ -36,7 +36,11 @@ export default function Login() {
     try {
       const res = await axios.post(`${API_URL}/users/login`, data);
       await signIn(res.data.data);
-      router.replace("/(tabs)/");
+      if (res.data.data.type === "CLIENT") {
+        router.replace("/(tabs)/");
+      } else {
+        router.replace("/(artisan-tabs)/");
+      }
     } catch (err) {
       console.log(err);
       setError("email", { message: "Email ou mot de passe incorrect" });
@@ -90,7 +94,8 @@ export default function Login() {
           Vous n'avez pas un compte,
           <Link href="/(auth)/signup">
             <ManropeText style={styles.toSignupLink} weight={600}>
-              {" "}s'inscrire
+              {" "}
+              s'inscrire
             </ManropeText>
           </Link>
         </ManropeText>

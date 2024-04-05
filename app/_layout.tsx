@@ -70,7 +70,27 @@ function RootLayoutNav() {
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="(auth)" options={{ headerShown: false }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="(artisan-tabs)"
+            options={{ headerShown: false }}
+          />
           <Stack.Screen name="profile" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="profile-artisan"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen name="addService" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="addServiceRequest"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen name="services" options={{ headerShown: false }} />
+          <Stack.Screen name="requestsSent" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="requestsReceived"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen name="addUserRating" options={{ headerShown: false }} />
           <Stack.Screen name="modal" options={{ presentation: "modal" }} />
         </Stack>
       </ThemeProvider>

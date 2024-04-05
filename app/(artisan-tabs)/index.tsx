@@ -9,45 +9,24 @@ import {
 
 import { ManropeText } from "@/components/StyledText";
 import { useAuth } from "@/store/auth";
-import { Redirect, router } from "expo-router";
+import { Link, router } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { API_URL } from "@/constants/urls";
-import { LinearGradient } from "expo-linear-gradient";
-import Rating from "@/components/Rating";
 import ServiceCard from "@/components/ServiceCard";
 
 const links = [
   {
-    title: "Mes demandes",
+    title: "Ajouter un service",
     icon: require("../../assets/images/service.png"),
-    href: "/requestsSent",
+    href: "/addService",
   },
   {
-    title: "Publier une  annonce, soon..",
+    title: "Voir les demandes",
     icon: require("../../assets/images/sheet.png"),
-    href: "/(tabs)",
+    href: "/requestsReceived",
   },
 ];
-
-const getTopRatedArtisans = async () => {
-  try {
-    const res = await axios.get(`${API_URL}/users/top-rated-artisans`);
-    return res.data.data;
-  } catch (err) {
-    console.log(err);
-    return [];
-  }
-};
-export const getCategories = async () => {
-  try {
-    const res = await axios.get(`${API_URL}/services/categories`);
-    return res.data.data;
-  } catch (err) {
-    console.log(err);
-    return [];
-  }
-};
 
 const getServices = async () => {
   try {
@@ -58,24 +37,15 @@ const getServices = async () => {
     return [];
   }
 };
+
 export default function TabOneScreen() {
   const user = useAuth.use.user();
-  if (user?.type === "ARTISAN") {
-    return <Redirect href="/(artisan-tabs)/" />;
-  }
-  const { data: topRatedArtisans } = useQuery({
-    queryKey: ["topRatedArtisans"],
-    queryFn: getTopRatedArtisans,
-  });
-  const { data: categories } = useQuery({
-    queryKey: ["serviceCategories"],
-    queryFn: getCategories,
-  });
+
   const { data: services } = useQuery({
     queryKey: ["services"],
     queryFn: getServices,
   });
-  console.log(services);
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -89,18 +59,17 @@ export default function TabOneScreen() {
         </View>
         <Pressable
           onPress={() => {
-            router.push(`/profile/${user?.id}`);
+            router.push(`/profile-artisan/${user?.id}`);
           }}
         >
           <Image source={{ uri: user?.imgUrl }} style={styles.userImg} />
         </Pressable>
       </View>
       <ManropeText style={styles.questionText} weight={700}>
-        Quels prestataires de services choisiriez-vous aujourd'hui ?
+        Pour qui aimeriez vous travailler aujourd'hui ?
       </ManropeText>
       <ManropeText style={styles.connectText} weight={400}>
-        Connectez-vous avec le fournisseur de services le plus talentueux et
-        professionnel autour de vous.
+        Connectez-vous avec des nouveaux clients .
       </ManropeText>
       <FlatList
         data={links}
@@ -122,76 +91,8 @@ export default function TabOneScreen() {
           </Pressable>
         )}
       />
-
       <ManropeText style={styles.questionText} weight={700}>
-        Top Rated
-      </ManropeText>
-      <FlatList
-        data={topRatedArtisans}
-        keyExtractor={(item) => item.id}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.links}
-        renderItem={({ item: user }) => (
-          <Pressable
-            onPress={() => {
-              router.push(`/profile-artisan/${user.id}`);
-            }}
-          >
-            <View key={user.id} style={styles.userLink}>
-              <Image
-                source={{ uri: user.imgUrl }}
-                style={styles.userLinkIcon}
-              />
-              <ManropeText style={styles.userLinkName} weight={400}>
-                {user.firstname} {user.lastname}
-              </ManropeText>
-              <ManropeText style={styles.userLinkJob} weight={400}>
-                {user.jobTitle || "Artisan"}
-              </ManropeText>
-              <Rating
-                rating={user.average_rating}
-                stylesProp={{ marginTop: 10 }}
-              />
-            </View>
-          </Pressable>
-        )}
-      />
-      <ManropeText style={styles.questionText} weight={700}>
-        Catégories
-      </ManropeText>
-      <FlatList
-        data={categories}
-        keyExtractor={(item) => item.id}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.links}
-        renderItem={({ item: category }) => (
-          <Pressable
-            key={category.id}
-            onPress={() => {
-              // router.push(`/categories/${category.id}`);
-            }}
-          >
-            <LinearGradient
-              style={{ borderRadius: 20 }}
-              colors={["#2E74AB", "#7FB4D7"]}
-            >
-              <View key={category.id} style={styles.categroyCard}>
-                <ManropeText style={styles.categoryName} weight={600}>
-                  {category.name}
-                </ManropeText>
-                <ManropeText style={styles.categoryDescription} weight={400}>
-                  {category.description}
-                </ManropeText>
-              </View>
-            </LinearGradient>
-          </Pressable>
-        )}
-      />
-
-      <ManropeText style={styles.questionText} weight={700}>
-        Services
+        Nouveax services
       </ManropeText>
       <FlatList
         data={services}
@@ -249,14 +150,15 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     gap: 20,
     marginTop: 20,
-    padding: 20,
+    paddingLeft: 20,
   },
   link: {
+    // alignItems: "center",
     backgroundColor: "white",
-    gap: 8,
     flexDirection: "row",
     padding: 15,
     borderRadius: 20,
+    gap: 8,
   },
   linkIcon: {
     width: 33,
@@ -276,7 +178,6 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     padding: 25,
     borderRadius: 20,
-    flex: 1,
   },
   userLinkIcon: {
     width: 80,

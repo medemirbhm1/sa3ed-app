@@ -1,9 +1,6 @@
-import { Link, Redirect, Stack, router } from "expo-router";
-import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Link, router } from "expo-router";
+import { useForm } from "react-hook-form";
 import {
-  View,
-  Text,
   StyleSheet,
   SafeAreaView,
   Pressable,
@@ -14,59 +11,59 @@ import { LinearGradient } from "expo-linear-gradient";
 import axios from "axios";
 import { API_URL } from "@/constants/urls";
 import { useAuth } from "@/store/auth";
-import { SelectList } from "react-native-dropdown-select-list";
 import Input from "@/components/Input";
 import { ManropeText } from "@/components/StyledText";
+import Select from "@/components/Select";
 
-const algerianWilayas = [
-  { key: 1, value: "Adrar" },
-  { key: 2, value: "Chlef" },
-  { key: 3, value: "Laghouat" },
-  { key: 4, value: "Oum El Bouaghi" },
-  { key: 5, value: "Batna" },
-  { key: 6, value: "Béjaïa" },
-  { key: 7, value: "Biskra" },
-  { key: 8, value: "Béchar" },
-  { key: 9, value: "Blida" },
-  { key: 10, value: "Bouira" },
-  { key: 11, value: "Tamanrasset" },
-  { key: 12, value: "Tébessa" },
-  { key: 13, value: "Tlemcen" },
-  { key: 14, value: "Tiaret" },
-  { key: 15, value: "Tizi Ouzou" },
-  { key: 16, value: "Alger" },
-  { key: 17, value: "Djelfa" },
-  { key: 18, value: "Jijel" },
-  { key: 19, value: "Sétif" },
-  { key: 20, value: "Saïda" },
-  { key: 21, value: "Skikda" },
-  { key: 22, value: "Sidi Bel Abbès" },
-  { key: 23, value: "Annaba" },
-  { key: 24, value: "Guelma" },
-  { key: 25, value: "Constantine" },
-  { key: 26, value: "Médéa" },
-  { key: 27, value: "Mostaganem" },
-  { key: 28, value: "M'Sila" },
-  { key: 29, value: "Mascara" },
-  { key: 30, value: "Ouargla" },
-  { key: 31, value: "Oran" },
-  { key: 32, value: "El Bayadh" },
-  { key: 33, value: "Illizi" },
-  { key: 34, value: "Bordj Bou Arréridj" },
-  { key: 35, value: "Boumerdès" },
-  { key: 36, value: "El Tarf" },
-  { key: 37, value: "Tindouf" },
-  { key: 38, value: "Tissemsilt" },
-  { key: 39, value: "El Oued" },
-  { key: 40, value: "Khenchela" },
-  { key: 41, value: "Souk Ahras" },
-  { key: 42, value: "Tipaza" },
-  { key: 43, value: "Mila" },
-  { key: 44, value: "Aïn Defla" },
-  { key: 45, value: "Naâma" },
-  { key: 46, value: "Aïn Témouchent" },
-  { key: 47, value: "Ghardaïa" },
-  { key: 48, value: "Relizane" },
+export const algerianWilayas = [
+  { key: "Adrar", value: "Adrar" },
+  { key: "Chlef", value: "Chlef" },
+  { key: "Laghouat", value: "Laghouat" },
+  { key: "Oum El Bouaghi", value: "Oum El Bouaghi" },
+  { key: "Batna", value: "Batna" },
+  { key: "Béjaïa", value: "Béjaïa" },
+  { key: "Biskra", value: "Biskra" },
+  { key: "Béchar", value: "Béchar" },
+  { key: "Blida", value: "Blida" },
+  { key: "Bouira", value: "Bouira" },
+  { key: "Tamanrasset", value: "Tamanrasset" },
+  { key: "Tébessa", value: "Tébessa" },
+  { key: "Tlemcen", value: "Tlemcen" },
+  { key: "Tiaret", value: "Tiaret" },
+  { key: "Tizi Ouzou", value: "Tizi Ouzou" },
+  { key: "Alger", value: "Alger" },
+  { key: "Djelfa", value: "Djelfa" },
+  { key: "Jijel", value: "Jijel" },
+  { key: "Sétif", value: "Sétif" },
+  { key: "Saïda", value: "Saïda" },
+  { key: "Skikda", value: "Skikda" },
+  { key: "Sidi Bel Abbès", value: "Sidi Bel Abbès" },
+  { key: "Annaba", value: "Annaba" },
+  { key: "Guelma", value: "Guelma" },
+  { key: "Constantine", value: "Constantine" },
+  { key: "Médéa", value: "Médéa" },
+  { key: "Mostaganem", value: "Mostaganem" },
+  { key: "M'Sila", value: "M'Sila" },
+  { key: "Mascara", value: "Mascara" },
+  { key: "Ouargla", value: "Ouargla" },
+  { key: "Oran", value: "Oran" },
+  { key: "El Bayadh", value: "El Bayadh" },
+  { key: "Illizi", value: "Illizi" },
+  { key: "Bordj Bou Arréridj", value: "Bordj Bou Arréridj" },
+  { key: "Boumerdès", value: "Boumerdès" },
+  { key: "El Tarf", value: "El Tarf" },
+  { key: "Tindouf", value: "Tindouf" },
+  { key: "Tissemsilt", value: "Tissemsilt" },
+  { key: "El Oued", value: "El Oued" },
+  { key: "Khenchela", value: "Khenchela" },
+  { key: "Souk Ahras", value: "Souk Ahras" },
+  { key: "Tipaza", value: "Tipaza" },
+  { key: "Mila", value: "Mila" },
+  { key: "Aïn Defla", value: "Aïn Defla" },
+  { key: "Naâma", value: "Naâma" },
+  { key: "Aïn Témouchent", value: "Aïn Témouchent" },
+  { key: "Ghardaïa", value: "Ghardaïa" },
+  { key: "Relizane", value: "Relizane" },
 ];
 
 type FormDataType = {
@@ -99,7 +96,11 @@ export default function Signup() {
         type: "CLIENT",
       });
       await signIn(res.data.data);
-      router.replace("/(tabs)/");
+      if (res.data.data.type === "CLIENT") {
+        router.replace("/(tabs)/");
+      } else {
+        router.replace("/(artisan-tabs)/");
+      }
     } catch (err) {
       console.log(err);
       setError("email", { message: "Email ou mot de passe incorrect" });
@@ -146,36 +147,17 @@ export default function Signup() {
             required: "Vous devez entrer votre numéro de téléphone",
           }}
         />
-        <ManropeText style={styles.label} weight={600}>
-          Wilaya
-        </ManropeText>
-        <Controller
+        <Select
           control={control}
-          render={({ field }) => (
-            <View style={styles.dropdownButton}>
-              <SelectList
-                setSelected={field.onChange}
-                data={algerianWilayas}
-                save="value"
-                placeholder="Selectionner votre wilaya"
-                boxStyles={styles.selectInput}
-                inputStyles={{
-                  fontFamily: "Manrope_400Regular",
-                }}
-                dropdownTextStyles={{
-                  fontFamily: "Manrope_400Regular",
-                }}
-              />
-            </View>
-          )}
+          errors={errors}
+          data={algerianWilayas}
+          placeholder="Votre wilaya"
+          label={"Wilaya"}
           name="city"
           rules={{
-            required: "Vous devez entrer votre wilaya",
+            required: "Vous devez choisir votre wilaya",
           }}
         />
-        {errors.city && (
-          <Text style={styles.errorText}>{errors.city.message}</Text>
-        )}
         <Input
           control={control}
           errors={errors}
@@ -249,23 +231,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "black",
   },
-  input: {
-    marginTop: 8,
-    borderColor: "gray",
-    borderRadius: 12,
-    borderWidth: 1.6,
-    marginBottom: 10,
-    padding: 10,
-    paddingLeft: 18,
-  },
-  errorText: {
-    color: "red",
-    marginBottom: 10,
-  },
-  selectInput: {
-    borderWidth: 0,
-    backgroundColor: "#F5F3EF",
-  },
   button: {
     backgroundColor: "#2E74AB",
     textAlign: "center",
@@ -286,9 +251,5 @@ const styles = StyleSheet.create({
   toLoginLink: {
     color: "#2E74AB",
     fontWeight: "500",
-  },
-  dropdownButton: {
-    marginTop: 8,
-    marginBottom: 10,
   },
 });

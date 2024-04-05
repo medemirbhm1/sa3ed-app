@@ -1,5 +1,6 @@
 import GoBackBtn from "@/components/GoBackBtn";
 import Rating from "@/components/Rating";
+import ServiceCard from "@/components/ServiceCard";
 import { ManropeText } from "@/components/StyledText";
 import { API_URL } from "@/constants/urls";
 import { useAuth } from "@/store/auth";
@@ -7,12 +8,19 @@ import { FontAwesome } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { router, useLocalSearchParams } from "expo-router";
-import { View, ScrollView, StyleSheet, Image, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  Image,
+  Pressable,
+  FlatList,
+} from "react-native";
 
 export const getUserDetails = async (id: string | string[]) => {
   try {
-    const res = await axios.get(`${API_URL}/users/clients/${id}`);
-    console.log(res.data.data);
+    const res = await axios.get(`${API_URL}/users/artisans/${id}`);
     return res.data.data;
   } catch (err) {
     console.log(err);
@@ -24,12 +32,14 @@ export default function Page() {
   const currentUser = useAuth.use.user();
   const { id } = useLocalSearchParams();
   const { data: user } = useQuery({
-    queryKey: ["clients", id],
+    queryKey: ["artisans", id],
     queryFn: getUserDetails.bind(null, id),
   });
   return (
     <ScrollView style={styles.container}>
-      <GoBackBtn />
+      <View style={{ paddingLeft: 20 }}>
+        <GoBackBtn />
+      </View>
       <View style={styles.header}>
         <Image source={{ uri: user?.imgUrl }} style={styles.userImg} />
         <View style={styles.headerRight}>
@@ -41,12 +51,26 @@ export default function Page() {
           </ManropeText>
           <Rating rating={user?.rating} />
           {currentUser?.id !== user?.id ? (
-            <></>
+            currentUser?.type == "CLIENT" ? (
+              <Pressable
+                style={styles.button}
+                onPress={() => {
+                  router.push({
+                    pathname: `/addServiceRequest`,
+                    params: { artisanId: user?.id },
+                  });
+                }}
+              >
+                <ManropeText style={styles.buttonText} weight={500}>
+                  Demander
+                </ManropeText>
+              </Pressable>
+            ) : null
           ) : (
             <Pressable
               style={styles.button}
               onPress={() => {
-                router.push(`profile/edit/${id}`);
+                router.push(`/profile-artisan/edit/${id}`);
               }}
             >
               <ManropeText style={styles.buttonText} weight={500}>
@@ -59,7 +83,7 @@ export default function Page() {
       <View style={styles.statsContainer}>
         <View>
           <ManropeText style={styles.statTitle} weight={700}>
-            Total services
+            Total missions
           </ManropeText>
           <ManropeText style={styles.statText} weight={400}>
             {user?.totalServices}
@@ -67,15 +91,19 @@ export default function Page() {
         </View>
         <View>
           <ManropeText style={styles.statTitle} weight={700}>
-            Total dépensé
+            Total gagné
           </ManropeText>
           <ManropeText style={styles.statText} weight={400}>
-            {user?.totalSpent || 0} DA
+            {user?.totalEarned || 0} DA
           </ManropeText>
         </View>
       </View>
       {user?.description || "h" ? (
-        <View>
+        <View
+          style={{
+            paddingHorizontal: 20,
+          }}
+        >
           <ManropeText style={styles.sectionTitle} weight={700}>
             A propos
           </ManropeText>
@@ -84,13 +112,34 @@ export default function Page() {
           </ManropeText>
         </View>
       ) : null}
+      {user?.services?.length ? (
+        <View style={{ paddingLeft: 20 }}>
+          <ManropeText style={styles.sectionTitle} weight={700}>
+            Services
+          </ManropeText>
+          <FlatList
+            data={user.services}
+            keyExtractor={(item) => item.id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.services}
+            renderItem={({ item }) => <ServiceCard service={item} />}
+          />
+        </View>
+      ) : null}
       {user?.ratings?.length ? (
-        <View>
+        <View style={{ paddingHorizontal: 20 }}>
           <ManropeText style={styles.sectionTitle} weight={700}>
             Avis
           </ManropeText>
           {user?.ratings.map((rating) => (
-            <View key={rating.id} style={styles.ratingContainer}>
+            <Pressable
+              onPress={() => {
+                router.push(`/profile/${rating.rater.id}`);
+              }}
+              key={rating.id}
+              style={styles.ratingContainer}
+            >
               <Image
                 source={{ uri: rating.rater.imgUrl }}
                 style={styles.ratingUserImg}
@@ -114,16 +163,11 @@ export default function Page() {
                   {rating.comment}
                 </ManropeText>
               </View>
-            </View>
+            </Pressable>
           ))}
         </View>
       ) : null}
-      <View
-        style={{
-          height: 100,
-          width: "100%",
-        }}
-      />
+      <View style={{ height: 100, width: 100 }} />
     </ScrollView>
   );
 }
@@ -133,10 +177,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F9F9F7",
     paddingTop: 80,
-    paddingHorizontal: 20,
   },
   header: {
-    paddingVertical: 20,
+    padding: 20,
     gap: 20,
     flexDirection: "row",
     alignItems: "center",
@@ -174,8 +217,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     color: "#2E74AB",
-    marginTop: 40,
-    marginBottom: 20,
+    marginVertical: 20,
   },
   description: {
     fontSize: 14,
@@ -214,5 +256,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10,
     marginTop: 5,
+  },
+  services: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "stretch",
+    gap: 20,
   },
 });

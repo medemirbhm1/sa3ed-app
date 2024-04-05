@@ -1,8 +1,6 @@
-import { View, Text } from "react-native";
-import React from "react";
 import { Stack } from "expo-router";
 
-export default function _layout() {
+export default function Layout() {
   return (
     <Stack>
       <Stack.Screen
@@ -11,7 +9,6 @@ export default function _layout() {
           headerShown: false,
         }}
       />
-      <Stack.Screen name="edit/[id]" options={{ headerShown: false }} />
     </Stack>
   );
 }
