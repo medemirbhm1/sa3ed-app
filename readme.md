@@ -15,6 +15,9 @@
 
 7- Congrats you have the application running on your device 
 
+required: your phone and pc need to be connected to the same local network. 
+
+
 # Note
 We are using a free tier to deploy the backend, 
 and the server gets shutdown automatically. if the app does not reply anymore just hit the link below on any navigator or device to make the server start again
